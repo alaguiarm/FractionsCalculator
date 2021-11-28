@@ -72,9 +72,29 @@ function calculateOperation(firstOperand,operator,secondOperand){
          fractionResult = divide(firstOperand,secondOperand);
     }
 
+    if(fractionResult.numerator > 1 & fractionResult.denominator > 1){
+        fractionResult = simplify(fractionResult.numerator,fractionResult.denominator,fractionResult.isNegative);
+    }
+
     console.log(fractionResult.print);
     //return processFractionResult(fractionResult);
 };
+
+function simplify(numerator,denominator,sign){
+    let firstNumber = Math.max(numerator,denominator);
+    let secondNumber = Math.min(numerator,denominator);
+    let remainder = 1;
+    while(remainder > 0){
+        //console.log("start",firstNumber,secondNumber,remainder);
+        firstNumber = Math.max(firstNumber,secondNumber);
+        secondNumber = Math.min(firstNumber,secondNumber);
+        remainder = firstNumber % secondNumber;
+        firstNumber = secondNumber;
+        secondNumber = remainder;
+        //console.log("end",firstNumber,secondNumber,remainder);
+    }
+    return new Fraction(Math.floor(numerator/firstNumber),Math.floor(denominator/firstNumber),sign);
+}
 
 function add(firstOperand,secondOperand){
     if(firstOperand.numerator === 0){       
