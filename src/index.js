@@ -1,4 +1,4 @@
-const {answer} = require("./controller");
+const {answer} = require("./calculator");
 
 const readline = require("readline");
 const rl = readline.createInterface({
