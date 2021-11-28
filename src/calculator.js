@@ -76,9 +76,18 @@ function calculateOperation(firstOperand,operator,secondOperand){
         fractionResult = simplify(fractionResult.numerator,fractionResult.denominator,fractionResult.isNegative);
     }
 
+    if(fractionResult.numerator > fractionResult.denominator){
+        fractionResult = convertFractionToMixed(fractionResult.numerator,fractionResult.denominator,fractionResult.isNegative);
+    }
+
     console.log(fractionResult.print);
     //return processFractionResult(fractionResult);
 };
+
+function convertFractionToMixed(numerator,denominator,sign){
+    let remainder = numerator % denominator;
+    return new MixedNumber(Math.floor(Math.abs(numerator) / Math.abs(denominator)),remainder,Math.abs(denominator),sign);
+}
 
 function simplify(numerator,denominator,sign){
     let firstNumber = Math.max(numerator,denominator);
