@@ -8,6 +8,20 @@ class Fraction {
     get print(){
         return (this.isNegative ? "-" : "") + this.numerator + "/" + this.denominator;
     }
+
+    simplify(){
+        let firstNumber = Math.max(this.numerator,this.denominator);
+        let secondNumber = Math.min(this.numerator,this.denominator);
+        let remainder = 1;
+        while(remainder > 0){
+            firstNumber = Math.max(firstNumber,secondNumber);
+            secondNumber = Math.min(firstNumber,secondNumber);
+            remainder = firstNumber % secondNumber;
+            firstNumber = secondNumber;
+            secondNumber = remainder;
+        }
+        return new Fraction(Math.floor(this.numerator/firstNumber),Math.floor(this.denominator/firstNumber),this.isNegative);
+    }
 }
 
 class MixedNumber {
@@ -34,6 +48,133 @@ class WholeNumber {
     }
 }
 
+class Calculator{
+    constructor(firstOperand,operator,secondOperand){
+        this.firstOperand = firstOperand;
+        this.secondOperand = secondOperand;
+        this.operator = operator;
+        this.result;
+    }
+    
+    calculate(operator){
+        if (operator === '+') {
+            this.result = this.add(this.firstOperand,this.secondOperand).simplify();
+        }else if (operator === '-') {  
+            this.result = this.substract(this.firstOperand,this.secondOperand).simplify();
+        }else if (operator === '*') {
+            this.result = this.multiply(this.firstOperand,this.secondOperand).simplify();
+        } else if (operator === '/') {
+            this.result = this.divide(this.firstOperand,this.secondOperand).simplify();
+        }
+
+        if(this.result.numerator > this.result.denominator){
+            this.result = this.convertFractionToMixed(this.result.numerator,this.result.denominator,this.result.isNegative);
+        }
+
+        return this.result.print;
+
+    }
+
+    add(firstOperand,secondOperand){
+        if(this.firstOperand.numerator === 0){       
+            return secondOperand;
+        } else if (this.secondOperand.numerator === 0){
+            return firstOperand;
+        } else if (this.firstOperand.denominator === this.secondOperand.denominator){
+            let numeratorsAddition = this.getNumeratorsAddition(this.firstOperand.numerator, this.firstOperand.isNegative, this.secondOperand.numerator, this.secondOperand.isNegative);
+            return new Fraction(Math.abs(numeratorsAddition),this.firstOperand.denominator,numeratorsAddition < 0 ? true : false);
+        } else {
+            let commonDenominator, firstNewNumerator, secondNewNumerator;
+            [firstNewNumerator, secondNewNumerator,commonDenominator] = this.getHeterogenousOperationTerms(firstOperand.numerator,firstOperand.denominator,secondOperand.numerator,secondOperand.denominator);
+            let numeratorsAddition = this.getNumeratorsAddition(firstNewNumerator, firstOperand.isNegative, secondNewNumerator, secondOperand.isNegative);
+            return new Fraction(Math.abs(numeratorsAddition),commonDenominator,numeratorsAddition < 0 ? true : false);
+        }
+    }
+
+    getNumeratorsAddition(firstNumerator, firstSignal, secondNumerator, secondSignal){
+        return firstNumerator*this.getSignMultiplier(firstSignal) + secondNumerator*this.getSignMultiplier(secondSignal);
+    }
+
+    substract(firstOperand,secondOperand){
+        if(this.firstOperand.numerator === 0){
+            return secondOperand;
+        } else if (this.secondOperand.numerator === 0){
+            return firstOperand;
+        } else if (firstOperand.denominator === secondOperand.denominator){
+            let numeratorsSubstracion = this.getNumeratorsSubstraction(this.firstOperand.numerator, this.firstOperand.isNegative, this.secondOperand.numerator, this.secondOperand.isNegative);
+            return new Fraction(Math.abs(numeratorsSubstracion),this.firstOperand.denominator,numeratorsSubstracion < 0 ? true : false);
+        } else {
+            let commonDenominator, firstNewNumerator, secondNewNumerator;
+            [firstNewNumerator, secondNewNumerator,commonDenominator] = this.getHeterogenousOperationTerms(this.firstOperand.numerator,this.firstOperand.denominator,this.secondOperand.numerator,this.secondOperand.denominator);
+            let numeratorsSubstracion = this.getNumeratorsSubstraction(firstNewNumerator, this.firstOperand.isNegative, this.secondNewNumerator, this.secondOperand.isNegative);
+            return new Fraction(Math.abs(numeratorsSubstracion),commonDenominator,numeratorsSubstracion < 0 ? true : false);
+        }
+    }
+
+    getNumeratorsSubstraction(firstNumerator, firstSignal, secondNumerator, secondSignal){
+        return firstNumerator*this.getSignMultiplier(firstSignal) - secondNumerator*this.getSignMultiplier(secondSignal);
+    }
+
+    greatestCommonDivisor(firstNumber,secondNumber){
+        if (firstNumber === firstNumber){
+            return firstNumber;
+        }else if(firstNumber > secondNumber){
+            return this.greatestCommonDivisor(firstNumber-secondNumber,secondNumber);
+        }else{
+            return this.greatestCommonDivisor(firstNumber,secondNumber-firstNumber);
+        }
+    };
+    
+    getCommonDenominator(gcd,firstNumber,secondNumber){
+        if(gcd === 1){
+            return firstNumber * secondNumber;
+        }else{
+            return Math.max(firstNumber,secondNumber);
+        }
+    };
+    
+    getHeterogenousOperationTerms(firstNumerator,firstDenominator,secondNumerator,secondDenominator){
+        let gcd, commonDenominator;
+        gcd = this.greatestCommonDivisor(firstDenominator,secondDenominator);
+        commonDenominator = this.getCommonDenominator(gcd,firstDenominator,secondDenominator);
+        return [this.getNewNumerator(commonDenominator,firstDenominator,firstNumerator),this.getNewNumerator(commonDenominator,secondDenominator,secondNumerator),commonDenominator];
+    };
+    
+    getNewNumerator(commonDenominator,denominator,numerator){
+        return (commonDenominator / denominator) * numerator;
+    }
+
+    multiply(firstOperand,secondOperand){
+        if(this.firstOperand.numerator === 0 || this.secondOperand.numerator === 0 || this.firstOperand.denominator === 0 || this.secondOperand.denominator === 0){
+            return new Fraction(0,1,false);
+        }else{
+            return new Fraction(this.firstOperand.numerator*this.secondOperand.numerator,this.firstOperand.denominator*this.secondOperand.denominator,this.getSignCombination(this.firstOperand,this.secondOperand));
+        }
+    }
+
+    getSignMultiplier(negSignalFlag){
+        return negSignalFlag ? -1 : 1;
+    };
+    
+    divide(firstOperand,secondOperand){
+        if(firstOperand.numerator === 0 || secondOperand.numerator === 0 || firstOperand.denominator === 0 || secondOperand.denominator === 0){
+            return new Fraction(0,1,false);
+        }else{
+            return new Fraction(firstOperand.numerator*secondOperand.denominator,firstOperand.denominator*secondOperand.numerator,this.getSignCombination(this.firstOperand,this.secondOperand));
+        }
+    }
+
+    getSignCombination(firstOperand,secondOperand){
+        return ((firstOperand.isNegative && secondOperand.isNegative) || (!firstOperand.isNegative && !secondOperand.isNegative)) ? false : true;
+    }
+
+    convertFractionToMixed(numerator,denominator,sign){
+        let remainder = numerator % denominator;
+        return new MixedNumber(Math.floor(Math.abs(numerator) / Math.abs(denominator)),remainder,Math.abs(denominator),sign);
+    }
+}
+
+
 function processExpression(termExpression){
     let minusFound = false;
 
@@ -55,148 +196,8 @@ function processExpression(termExpression){
 
 function convertMixedNumberToFraction(whole,fraction,minusFound) {
     let [numerator, denominator] = fraction.split("/");
-    //console.log((+whole * +denominator) + (+numerator),+denominator,minusFound);
     return [(+whole * +denominator) + (+numerator),denominator,minusFound];
 }
-
-function calculateOperation(firstOperand,operator,secondOperand){
-    let fractionResult;
-
-    if (operator === '+') {
-        fractionResult = add(firstOperand,secondOperand);
-    }else if (operator === '-') {  
-         fractionResult = substract(firstOperand,secondOperand);
-    }else if (operator === '*') {
-         fractionResult = multiply(firstOperand,secondOperand);
-    } else if (operator === '/') {
-         fractionResult = divide(firstOperand,secondOperand);
-    }
-
-    if(fractionResult.numerator > 1 & fractionResult.denominator > 1){
-        fractionResult = simplify(fractionResult.numerator,fractionResult.denominator,fractionResult.isNegative);
-    }
-
-    if(fractionResult.numerator > fractionResult.denominator){
-        fractionResult = convertFractionToMixed(fractionResult.numerator,fractionResult.denominator,fractionResult.isNegative);
-    }
-
-    console.log(fractionResult.print);
-    //return processFractionResult(fractionResult);
-};
-
-function convertFractionToMixed(numerator,denominator,sign){
-    let remainder = numerator % denominator;
-    return new MixedNumber(Math.floor(Math.abs(numerator) / Math.abs(denominator)),remainder,Math.abs(denominator),sign);
-}
-
-function simplify(numerator,denominator,sign){
-    let firstNumber = Math.max(numerator,denominator);
-    let secondNumber = Math.min(numerator,denominator);
-    let remainder = 1;
-    while(remainder > 0){
-        //console.log("start",firstNumber,secondNumber,remainder);
-        firstNumber = Math.max(firstNumber,secondNumber);
-        secondNumber = Math.min(firstNumber,secondNumber);
-        remainder = firstNumber % secondNumber;
-        firstNumber = secondNumber;
-        secondNumber = remainder;
-        //console.log("end",firstNumber,secondNumber,remainder);
-    }
-    return new Fraction(Math.floor(numerator/firstNumber),Math.floor(denominator/firstNumber),sign);
-}
-
-function add(firstOperand,secondOperand){
-    if(firstOperand.numerator === 0){       
-        return secondOperand;
-    } else if (secondOperand.numerator === 0){
-        return firstOperand;
-    } else if (firstOperand.denominator === secondOperand.denominator){
-        let numeratorsAddition = getNumeratorsAddition(firstOperand.numerator, firstOperand.isNegative, secondOperand.numerator, secondOperand.isNegative);
-        return new Fraction(Math.abs(numeratorsAddition),firstOperand.denominator,numeratorsAddition < 0 ? true : false);
-    } else {
-        let commonDenominator, firstNewNumerator, secondNewNumerator;
-        [firstNewNumerator, secondNewNumerator,commonDenominator] = getHeterogenousOperationTerms(firstOperand.numerator,firstOperand.denominator,secondOperand.numerator,secondOperand.denominator);
-        let numeratorsAddition = getNumeratorsAddition(firstNewNumerator, firstOperand.isNegative, secondNewNumerator, secondOperand.isNegative);
-        return new Fraction(Math.abs(numeratorsAddition),commonDenominator,numeratorsAddition < 0 ? true : false);
-    }
-};
-
-function substract(firstOperand,secondOperand){
-    if(firstOperand.numerator === 0){
-        return secondOperand.print;
-    } else if (secondOperand.numerator === 0){
-        return firstOperand.print;
-    } else if (firstOperand.denominator === secondOperand.denominator){
-        let numeratorsSubstracion = getNumeratorsSubstraction(firstOperand.numerator, firstOperand.isNegative, secondOperand.numerator, secondOperand.isNegative);
-        return new Fraction(Math.abs(numeratorsSubstracion),firstOperand.denominator,numeratorsSubstracion < 0 ? true : false);
-    } else {
-        let commonDenominator, firstNewNumerator, secondNewNumerator;
-        [firstNewNumerator, secondNewNumerator,commonDenominator] = getHeterogenousOperationTerms(firstOperand.numerator,firstOperand.denominator,secondOperand.numerator,secondOperand.denominator);
-        let numeratorsSubstracion = getNumeratorsSubstraction(firstNewNumerator, firstOperand.isNegative, secondNewNumerator, secondOperand.isNegative);
-        return new Fraction(Math.abs(numeratorsSubstracion),commonDenominator,numeratorsSubstracion < 0 ? true : false);
-    }
-};
-
-function greatestCommonDivisor(firstNumber,secondNumber){
-    if (firstNumber === firstNumber){
-        return firstNumber;
-    }else if(firstNumber > secondNumber){
-        return greatestCommonDivisor(firstNumber-secondNumber,secondNumber);
-    }else{
-        return greatestCommonDivisor(firstNumber,secondNumber-firstNumber);
-    }
-};
-
-function getCommonDenominator(gcd,firstNumber,secondNumber){
-    if(gcd === 1){
-        return firstNumber * secondNumber;
-    }else{
-        return Math.max(firstNumber,secondNumber);
-    }
-};
-
-function getHeterogenousOperationTerms(firstNumerator,firstDenominator,secondNumerator,secondDenominator){
-    let gcd, commonDenominator;
-    gcd = greatestCommonDivisor(firstDenominator,secondDenominator);
-    commonDenominator = getCommonDenominator(gcd,firstDenominator,secondDenominator);
-    return [getNewNumerator(commonDenominator,firstDenominator,firstNumerator),getNewNumerator(commonDenominator,secondDenominator,secondNumerator),commonDenominator];
-};
-
-function getNewNumerator(commonDenominator,denominator,numerator){
-    return (commonDenominator / denominator) * numerator;
-};
-
-function getSignMultiplier(negSignalFlag){
-    return negSignalFlag ? -1 : 1;
-};
-
-function getNumeratorsAddition(firstNumerator, firstSignal, secondNumerator, secondSignal){
-    return firstNumerator*getSignMultiplier(firstSignal) + secondNumerator*getSignMultiplier(secondSignal);
-};
-
-function getNumeratorsSubstraction(firstNumerator, firstSignal, secondNumerator, secondSignal){
-    return firstNumerator*getSignMultiplier(firstSignal) - secondNumerator*getSignMultiplier(secondSignal);
-};
-
-function multiply(firstOperand,secondOperand){
-    if(firstOperand.numerator === 0 || secondOperand.numerator === 0 || firstOperand.denominator === 0 || secondOperand.denominator === 0){
-        return new Fraction(0,1,false);
-    }else{
-        return new Fraction(firstOperand.numerator*secondOperand.numerator,firstOperand.denominator*secondOperand.denominator,getSignCombination(firstOperand,secondOperand));
-    }
-};
-
-function getSignCombination(firstOperand,secondOperand){
-    return ((firstOperand.isNegative && secondOperand.isNegative) || (!firstOperand.isNegative && !secondOperand.isNegative)) ? false : true;
-} 
-
-function divide(firstOperand,secondOperand){
-    if(firstOperand.numerator === 0 || secondOperand.numerator === 0 || firstOperand.denominator === 0 || secondOperand.denominator === 0){
-        return new Fraction(0,1,false);
-    }else{
-        return new Fraction(firstOperand.numerator*secondOperand.denominator,firstOperand.denominator*secondOperand.numerator,getSignCombination(firstOperand,secondOperand));
-    }
-};
 
 const answer = (expressionStr) => {
     let expressionArray = expressionStr.split(/\s+/);
@@ -207,12 +208,15 @@ const answer = (expressionStr) => {
         [secondNumerator, secondDenominator, secondMinusFound] = processExpression(term2);
         const firstOperand = new Fraction(firstNumerator, firstDenominator, firstMinusFound);
         const secondOperand = new Fraction(secondNumerator, secondDenominator, secondMinusFound);
-        return calculateOperation(firstOperand,operator,secondOperand);
+        //return calculateOperation(firstOperand,operator,secondOperand);
+        let calculatorInstance = new Calculator(firstOperand, operator, secondOperand);
+        //console.log(calculatorInstance);
+        return calculatorInstance.calculate(operator);
     }else{
         throw new Error ('Invalid expression. Try again with another one.');
     }
 }
 
 module.exports = {
-    answer, processExpression,convertMixedNumberToFraction, calculateOperation
+    answer, processExpression,convertMixedNumberToFraction
 };
