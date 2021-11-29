@@ -120,7 +120,7 @@ class Calculator{
     }
 
     greatestCommonDivisor(firstNumber,secondNumber){
-        if (firstNumber === firstNumber){
+        if (firstNumber === secondNumber){
             return firstNumber;
         }else if(firstNumber > secondNumber){
             return this.greatestCommonDivisor(firstNumber-secondNumber,secondNumber);
@@ -202,7 +202,6 @@ function convertMixedNumberToFraction(whole,fraction,minusFound) {
 };
 
 function validateMixedNumber(expression,minusFound) {
-    //console.log(expression.split("_")[0],expression.split("/")[0].split("_")[1],expression.split("/")[1]);
     if(Number(expression.split("_")[0]) && Number(expression.split("/")[0].split("_")[1]) && Number(expression.split("/")[1]) && expression.split("/")[1] > 0){
         return convertMixedNumberToFraction(expression.split("_")[0],expression.split("_")[1],minusFound);
     }else{
@@ -211,7 +210,6 @@ function validateMixedNumber(expression,minusFound) {
 };
 
 function validateFraction(expression,minusFound) {
-    console.log(expression);
     if(expression.split("/")[1] > 0){
         return [expression.split("/")[0],expression.split("/")[1],minusFound];
     }else{
