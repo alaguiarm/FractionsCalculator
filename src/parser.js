@@ -55,5 +55,5 @@ const answer = (expressionStr) => {
 };
 
 module.exports = {
-    answer, processExpression,convertMixedNumberToFraction
+    answer
 };
