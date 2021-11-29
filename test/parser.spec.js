@@ -34,5 +34,8 @@ describe('User Input Parser Test', function () {
         it('Should deal with zero denominator i.e. Zero division', function () {
             assert.throw(() => {parser.answer("1/2 + 3/0")});
         });
+        it('Should deal with zero division', function () {
+            assert.throw(() => {parser.answer("1/0 + 0")});
+        });
     });
 });

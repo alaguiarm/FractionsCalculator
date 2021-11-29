@@ -77,4 +77,24 @@ describe('Fractions Calculator Test', function () {
         });
     });
 
+    describe('Calculator Result type Test', function () {
+        it('Should deal with fraction result type', function () {
+            let firstOperand = new Fraction(1, 2, false);
+            let secondOperand = new Fraction(1, 3, false);
+            let calculatorInstance = new Calculator(firstOperand, "+", secondOperand);
+            calculatorInstance.calculate().should.be.equal("5/6");
+        });
+        it('Should deal with mixed number result type', function () {
+            let firstOperand = new Fraction(15, 4, false);
+            let secondOperand = new Fraction(1, 2, false);
+            let calculatorInstance = new Calculator(firstOperand, "+", secondOperand);
+            calculatorInstance.calculate().should.be.equal("4_1/4");
+        });
+        it('Should deal with whole number result type', function () {
+            let firstOperand = new Fraction(3, 2, false);
+            let secondOperand = new Fraction(1, 2, false);
+            let calculatorInstance = new Calculator(firstOperand, "+", secondOperand);
+            calculatorInstance.calculate().should.be.equal("2");
+        });
+    });
 });
