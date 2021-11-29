@@ -10,14 +10,18 @@ function processExpression(termExpression){
         termExpression = termExpression.substring(1);
         minusFound = true;
     }
-    
-    if (termExpression.includes("_") && termExpression.includes("/")){
-        return validateMixedNumber(termExpression,minusFound);
-    } else if (termExpression.includes("/")){
-        return validateFraction(termExpression,minusFound);
-    }  else if (Number(termExpression)){
-        return [termExpression,1,minusFound];
+
+
+    if(isNaN(termExpression)){
+        if (termExpression.includes("_") && termExpression.includes("/")){
+            return validateMixedNumber(termExpression,minusFound);
+        } else if (termExpression.includes("/")){
+            return validateFraction(termExpression,minusFound);
+        }
+    }else{
+        return [+termExpression,1,minusFound];
     }
+    
 };
 
 function convertMixedNumberToFraction(whole,fraction,minusFound) {

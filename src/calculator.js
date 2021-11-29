@@ -12,13 +12,17 @@ class Calculator{
     
     calculate(){
         if (this.operator === '+') {
-            this.result = this.add(this.firstOperand,this.secondOperand).simplify();
+            this.result = this.add(this.firstOperand,this.secondOperand);
         }else if (this.operator === '-') {  
-            this.result = this.substract(this.firstOperand,this.secondOperand).simplify();
+            this.result = this.substract(this.firstOperand,this.secondOperand);
         }else if (this.operator === '*') {
-            this.result = this.multiply(this.firstOperand,this.secondOperand).simplify();
+            this.result = this.multiply(this.firstOperand,this.secondOperand);
         } else if (this.operator === '/') {
-            this.result = this.divide(this.firstOperand,this.secondOperand).simplify();
+            this.result = this.divide(this.firstOperand,this.secondOperand);
+        }
+
+        if(this.result.numerator > 1 && this.result.denominator > 1){
+            this.result = this.result.simplifly();
         }
 
         if(this.result.numerator > this.result.denominator && this.result.numerator % this.result.denominator > 0){
@@ -115,8 +119,10 @@ class Calculator{
     };
     
     divide(firstOperand,secondOperand){
-        if(firstOperand.numerator === 0 || secondOperand.numerator === 0 || firstOperand.denominator === 0 || secondOperand.denominator === 0){
+        if(firstOperand.numerator === 0 || firstOperand.denominator === 0 || secondOperand.denominator === 0){
             return new Fraction(0,1,false);
+        }else if(secondOperand.numerator === 0){
+            throw new Error ('Invalid expression. Division by Zero. Try again with another one.');
         }else{
             return new Fraction(firstOperand.numerator*secondOperand.denominator,firstOperand.denominator*secondOperand.numerator,this.getSignCombination(this.firstOperand,this.secondOperand));
         }
