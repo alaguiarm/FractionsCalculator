@@ -56,14 +56,14 @@ class Calculator{
         this.result;
     }
     
-    calculate(operator){
-        if (operator === '+') {
+    calculate(){
+        if (this.operator === '+') {
             this.result = this.add(this.firstOperand,this.secondOperand).simplify();
-        }else if (operator === '-') {  
+        }else if (this.operator === '-') {  
             this.result = this.substract(this.firstOperand,this.secondOperand).simplify();
-        }else if (operator === '*') {
+        }else if (this.operator === '*') {
             this.result = this.multiply(this.firstOperand,this.secondOperand).simplify();
-        } else if (operator === '/') {
+        } else if (this.operator === '/') {
             this.result = this.divide(this.firstOperand,this.secondOperand).simplify();
         }
 
@@ -86,12 +86,12 @@ class Calculator{
             return firstOperand;
         } else if (this.firstOperand.denominator === this.secondOperand.denominator){
             let numeratorsAddition = this.getNumeratorsAddition(this.firstOperand.numerator, this.firstOperand.isNegative, this.secondOperand.numerator, this.secondOperand.isNegative);
-            return new Fraction(Math.abs(numeratorsAddition),this.firstOperand.denominator,numeratorsAddition < 0 ? true : false);
+            return new Fraction(Math.abs(numeratorsAddition),this.firstOperand.denominator,numeratorsAddition < 0);
         } else {
             let commonDenominator, firstNewNumerator, secondNewNumerator;
             [firstNewNumerator, secondNewNumerator,commonDenominator] = this.getHeterogenousOperationTerms(firstOperand.numerator,firstOperand.denominator,secondOperand.numerator,secondOperand.denominator);
             let numeratorsAddition = this.getNumeratorsAddition(firstNewNumerator, firstOperand.isNegative, secondNewNumerator, secondOperand.isNegative);
-            return new Fraction(Math.abs(numeratorsAddition),commonDenominator,numeratorsAddition < 0 ? true : false);
+            return new Fraction(Math.abs(numeratorsAddition),commonDenominator,numeratorsAddition < 0);
         }
     }
 
@@ -106,12 +106,12 @@ class Calculator{
             return firstOperand;
         } else if (firstOperand.denominator === secondOperand.denominator){
             let numeratorsSubstracion = this.getNumeratorsSubstraction(this.firstOperand.numerator, this.firstOperand.isNegative, this.secondOperand.numerator, this.secondOperand.isNegative);
-            return new Fraction(Math.abs(numeratorsSubstracion),this.firstOperand.denominator,numeratorsSubstracion < 0 ? true : false);
+            return new Fraction(Math.abs(numeratorsSubstracion),this.firstOperand.denominator,numeratorsSubstracion < 0);
         } else {
             let commonDenominator, firstNewNumerator, secondNewNumerator;
             [firstNewNumerator, secondNewNumerator,commonDenominator] = this.getHeterogenousOperationTerms(this.firstOperand.numerator,this.firstOperand.denominator,this.secondOperand.numerator,this.secondOperand.denominator);
             let numeratorsSubstracion = this.getNumeratorsSubstraction(firstNewNumerator, this.firstOperand.isNegative, secondNewNumerator, this.secondOperand.isNegative);
-            return new Fraction(Math.abs(numeratorsSubstracion),commonDenominator,numeratorsSubstracion < 0 ? true : false);
+            return new Fraction(Math.abs(numeratorsSubstracion),commonDenominator,numeratorsSubstracion < 0);
         }
     }
 
@@ -169,7 +169,7 @@ class Calculator{
     }
 
     getSignCombination(firstOperand,secondOperand){
-        return ((firstOperand.isNegative && secondOperand.isNegative) || (!firstOperand.isNegative && !secondOperand.isNegative)) ? false : true;
+        return (firstOperand.isNegative && secondOperand.isNegative) || (!firstOperand.isNegative && !secondOperand.isNegative);
     }
 
     convertFractionToMixed(numerator,denominator,sign){
@@ -213,21 +213,18 @@ function validateFraction(expression,minusFound) {
     if(expression.split("/")[1] > 0){
         return [expression.split("/")[0],expression.split("/")[1],minusFound];
     }else{
-        throw new Error ('Invalid expression. Try again with another one.');
+        throw new Error ('Invalid expression. Division by Zero. Try again with another one.');
     }
 };
 
 const answer = (expressionStr) => {
-    let expressionArray = expressionStr.split(/\s+/);
+    let expressionArray = expressionStr.trim().split(/\s+/);
     if(expressionArray.length === 3 && expressionArray[2].length > 0){
         const [term1, operator, term2] = expressionArray;
-        let firstNumerator, firstDenominator, firstMinusFound, secondNumerator, secondDenominator, secondMinusFound;
-        [firstNumerator, firstDenominator, firstMinusFound]= processExpression(term1);
-        [secondNumerator, secondDenominator, secondMinusFound] = processExpression(term2);
-        const firstOperand = new Fraction(firstNumerator, firstDenominator, firstMinusFound);
-        const secondOperand = new Fraction(secondNumerator, secondDenominator, secondMinusFound);
-        let calculatorInstance = new Calculator(firstOperand, operator, secondOperand);
-        return calculatorInstance.calculate(operator);
+        const firstOperand = new Fraction(...processExpression(term1));
+        const secondOperand = new Fraction(...processExpression(term2));
+        const calculatorInstance = new Calculator(firstOperand, operator, secondOperand);
+        return calculatorInstance.calculate();
     }else{
         throw new Error ('Invalid expression. Try again with another one.');
     }
