@@ -123,7 +123,10 @@ class Calculator{
     }
 
     getSignCombination(firstOperand,secondOperand){
-        return (firstOperand.isNegative && secondOperand.isNegative) || (!firstOperand.isNegative && !secondOperand.isNegative);
+        //console.log(firstOperand,secondOperand);
+        //console.log((firstOperand.isNegative && secondOperand.isNegative));
+        //console.log((firstOperand.isNegative || secondOperand.isNegative));
+        return (firstOperand.isNegative && !secondOperand.isNegative) || (!firstOperand.isNegative && secondOperand.isNegative);
     }
 
     convertFractionToMixed(numerator,denominator,sign){
