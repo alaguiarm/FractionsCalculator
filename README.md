@@ -5,10 +5,13 @@ OneLogin Coding Challenge
 * [Description](#description)
 * [Technologies](#technologies)
 * [Setup](#setup)
+* [Run Instructions](#run)
+* [Input Examples](#examples)
+* [Navigation](#navigation)
 
 ## Description
 This project executes operations on fractions and produce a fractional result. This calculator is able to add, substract, multiply and divide, given two operands.
-###### Features:
+##### Features:
 * The input is two operands (numbers) and one operator (*, /, +, -)
 * Input numbers can be either a fraction, a whole number (integer) or a mixed number (whole and fraction combined)
 * Addition and Substracion of fractions can be either homogeneous or heterogeneous
@@ -25,17 +28,16 @@ Fractions Calculator is created with the following:
 ## Setup
 To run this project, following components are needed to be installed:
 
-##### Node.js
+#### Node.js
 
 Install it locally using npm:
 
 ```
-$ cd <directory>
+$ git clone https://github.com/andrilu/FractionsCalculator.git
+$ cd FractionsCalculator
 $ npm install
-$ npm start
 ```
-
-##### Mocha
+#### Mocha
 
 Install with npm globally:
 
@@ -50,12 +52,21 @@ $ npm install --save-dev mocha
 
 In package.json file, test key will need value `"test": "mocha './test/*.spec.js'"`
 
-##### Chai
+#### Chai
 
 Install Chai Assertion Library using npm:
 
 ```
 $ npm install chai
+```
+
+## Run Instructions
+To run this application from `FractionsCalculator` directory:
+
+```
+$ cd src
+$ node index.js
+? <insert operation>
 ```
 
 ## Input Examples
@@ -69,3 +80,6 @@ $ npm install chai
 ? 2_3/8 + 9/8
 3_1/2
 ```
+
+## Navigation
+This application has a interactive command prompt, which allows as many input operations from the user. This application ends when the user provides the following commands: `q, quit, exit, bye`
