@@ -1,20 +1,23 @@
 const {answer} = require("./calculator");
-
 const readline = require("readline");
+
 const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
 });
 
-rl.question("? ", function (inputStr) {
-    try{
-        console.log(answer(inputStr));   
-    } catch (e) {
-        console.error(e.message);
-    } 
-    rl.close();
-});
+var recursiveReadLine = function () {
+    rl.question("? ", function (inputStr) {
+        if(inputStr === 'q' || inputStr === 'quit' || inputStr === 'exit' || inputStr === 'bye'){
+            return rl.close();
+        }
+        try{
+            console.log(answer(inputStr));   
+        } catch (e) {
+            console.error(e.message);
+        } 
+        recursiveReadLine();
+    });
+};
 
-rl.on("close", function () {
-    process.exit(0);
-});
+recursiveReadLine();
