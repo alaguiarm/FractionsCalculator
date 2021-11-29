@@ -1,52 +1,6 @@
-class Fraction {
-    constructor(numerator,denominator,isNegative) {
-        this.numerator = +numerator;
-        this.denominator = +denominator;
-        this.isNegative = isNegative;
-    }
-
-    get print(){
-        return (this.isNegative ? "-" : "") + this.numerator + "/" + this.denominator;
-    }
-
-    simplify(){
-        let firstNumber = Math.max(this.numerator,this.denominator);
-        let secondNumber = Math.min(this.numerator,this.denominator);
-        let remainder = 1;
-        while(remainder > 0){
-            firstNumber = Math.max(firstNumber,secondNumber);
-            secondNumber = Math.min(firstNumber,secondNumber);
-            remainder = firstNumber % secondNumber;
-            firstNumber = secondNumber;
-            secondNumber = remainder;
-        }
-        return new Fraction(Math.floor(this.numerator/firstNumber),Math.floor(this.denominator/firstNumber),this.isNegative);
-    }
-}
-
-class MixedNumber {
-    constructor(whole,numerator,denominator,isNegative) {
-        this.whole = whole;
-        this.numerator = numerator;
-        this.denominator = denominator;
-        this.isNegative = isNegative;
-    }
-
-    get print(){
-        return (this.isNegative ? "-" : "") + this.whole + "_" + this.numerator + "/" + this.denominator;
-    }
-}
-
-class WholeNumber {
-    constructor(number,isNegative) {
-        this.number = number;
-        this.isNegative = isNegative;
-    }
-
-    get print(){
-        return (this.isNegative ? "-" : "") + this.number;
-    }
-}
+const Fraction = require('./fraction');
+const MixedNumber = require('./mixednumber');
+const WholeNumber = require('./wholenumber');
 
 class Calculator{
     constructor(firstOperand,operator,secondOperand){
@@ -178,58 +132,4 @@ class Calculator{
     }
 }
 
-
-function processExpression(termExpression){
-    let minusFound = false;
-
-    if(termExpression.startsWith('-')){
-        termExpression = termExpression.substring(1);
-        minusFound = true;
-    }
-    
-    if (termExpression.includes("_") && termExpression.includes("/")){
-        return validateMixedNumber(termExpression,minusFound);
-    } else if (termExpression.includes("/")){
-        return validateFraction(termExpression,minusFound);
-    }  else if (Number(termExpression)){
-        return [termExpression,1,minusFound];
-    }
-};
-
-function convertMixedNumberToFraction(whole,fraction,minusFound) {
-    let [numerator, denominator] = fraction.split("/");
-    return [(+whole * +denominator) + (+numerator),denominator,minusFound];
-};
-
-function validateMixedNumber(expression,minusFound) {
-    if(Number(expression.split("_")[0]) && Number(expression.split("/")[0].split("_")[1]) && Number(expression.split("/")[1]) && expression.split("/")[1] > 0){
-        return convertMixedNumberToFraction(expression.split("_")[0],expression.split("_")[1],minusFound);
-    }else{
-        throw new Error ('Invalid expression. Try again with another one.');
-    }  
-};
-
-function validateFraction(expression,minusFound) {
-    if(expression.split("/")[1] > 0){
-        return [expression.split("/")[0],expression.split("/")[1],minusFound];
-    }else{
-        throw new Error ('Invalid expression. Division by Zero. Try again with another one.');
-    }
-};
-
-const answer = (expressionStr) => {
-    let expressionArray = expressionStr.trim().split(/\s+/);
-    if(expressionArray.length === 3 && expressionArray[2].length > 0){
-        const [term1, operator, term2] = expressionArray;
-        const firstOperand = new Fraction(...processExpression(term1));
-        const secondOperand = new Fraction(...processExpression(term2));
-        const calculatorInstance = new Calculator(firstOperand, operator, secondOperand);
-        return calculatorInstance.calculate();
-    }else{
-        throw new Error ('Invalid expression. Try again with another one.');
-    }
-};
-
-module.exports = {
-    answer, processExpression,convertMixedNumberToFraction
-};
+module.exports = Calculator;
