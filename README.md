@@ -64,9 +64,7 @@ $ npm install chai
 To run this application from `FractionsCalculator` directory:
 
 ```
-$ cd src
-$ node index.js
-? <insert operation>
+$ npm start
 ```
 
 ## Input Examples
