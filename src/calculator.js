@@ -22,14 +22,14 @@ class Calculator{
         }
 
         if(this.result.numerator > 1 && this.result.denominator > 1){
-            this.result = this.result.simplifly();
+            this.result = this.result.simplify();
         }
 
         if(this.result.numerator > this.result.denominator && this.result.numerator % this.result.denominator > 0){
             this.result = this.convertFractionToMixed(this.result.numerator,this.result.denominator,this.result.isNegative);
         }
 
-        if(this.result.denominator === 1){
+        if(this.result.denominator === 1 || (this.result.numerator === 0 && this.result.denominator > 0)){
             this.result = new WholeNumber(this.result.numerator,this.result.isNegative);
         }
 
