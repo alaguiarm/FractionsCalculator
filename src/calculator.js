@@ -67,8 +67,12 @@ class Calculator{
             this.result = this.divide(this.firstOperand,this.secondOperand).simplify();
         }
 
-        if(this.result.numerator > this.result.denominator){
+        if(this.result.numerator > this.result.denominator && this.result.numerator % this.result.denominator > 0){
             this.result = this.convertFractionToMixed(this.result.numerator,this.result.denominator,this.result.isNegative);
+        }
+
+        if(this.result.denominator === 1){
+            this.result = new WholeNumber(this.result.numerator,this.result.isNegative);
         }
 
         return this.result.print;
@@ -106,7 +110,7 @@ class Calculator{
         } else {
             let commonDenominator, firstNewNumerator, secondNewNumerator;
             [firstNewNumerator, secondNewNumerator,commonDenominator] = this.getHeterogenousOperationTerms(this.firstOperand.numerator,this.firstOperand.denominator,this.secondOperand.numerator,this.secondOperand.denominator);
-            let numeratorsSubstracion = this.getNumeratorsSubstraction(firstNewNumerator, this.firstOperand.isNegative, this.secondNewNumerator, this.secondOperand.isNegative);
+            let numeratorsSubstracion = this.getNumeratorsSubstraction(firstNewNumerator, this.firstOperand.isNegative, secondNewNumerator, this.secondOperand.isNegative);
             return new Fraction(Math.abs(numeratorsSubstracion),commonDenominator,numeratorsSubstracion < 0 ? true : false);
         }
     }
@@ -182,22 +186,38 @@ function processExpression(termExpression){
         termExpression = termExpression.substring(1);
         minusFound = true;
     }
-
+    
     if (termExpression.includes("_") && termExpression.includes("/")){
-        return convertMixedNumberToFraction(termExpression.split("_")[0],termExpression.split("_")[1],minusFound);
+        return validateMixedNumber(termExpression,minusFound);
     } else if (termExpression.includes("/")){
-        return [termExpression.split("/")[0],termExpression.split("/")[1],minusFound];
-    }  else if (!isNaN(termExpression)){
+        return validateFraction(termExpression,minusFound);
+    }  else if (Number(termExpression)){
         return [termExpression,1,minusFound];
-    } else {
-        //error
     }
 };
 
 function convertMixedNumberToFraction(whole,fraction,minusFound) {
     let [numerator, denominator] = fraction.split("/");
     return [(+whole * +denominator) + (+numerator),denominator,minusFound];
-}
+};
+
+function validateMixedNumber(expression,minusFound) {
+    //console.log(expression.split("_")[0],expression.split("/")[0].split("_")[1],expression.split("/")[1]);
+    if(Number(expression.split("_")[0]) && Number(expression.split("/")[0].split("_")[1]) && Number(expression.split("/")[1]) && expression.split("/")[1] > 0){
+        return convertMixedNumberToFraction(expression.split("_")[0],expression.split("_")[1],minusFound);
+    }else{
+        throw new Error ('Invalid expression. Try again with another one.');
+    }  
+};
+
+function validateFraction(expression,minusFound) {
+    console.log(expression);
+    if(expression.split("/")[1] > 0){
+        return [expression.split("/")[0],expression.split("/")[1],minusFound];
+    }else{
+        throw new Error ('Invalid expression. Try again with another one.');
+    }
+};
 
 const answer = (expressionStr) => {
     let expressionArray = expressionStr.split(/\s+/);
@@ -208,14 +228,12 @@ const answer = (expressionStr) => {
         [secondNumerator, secondDenominator, secondMinusFound] = processExpression(term2);
         const firstOperand = new Fraction(firstNumerator, firstDenominator, firstMinusFound);
         const secondOperand = new Fraction(secondNumerator, secondDenominator, secondMinusFound);
-        //return calculateOperation(firstOperand,operator,secondOperand);
         let calculatorInstance = new Calculator(firstOperand, operator, secondOperand);
-        //console.log(calculatorInstance);
         return calculatorInstance.calculate(operator);
     }else{
         throw new Error ('Invalid expression. Try again with another one.');
     }
-}
+};
 
 module.exports = {
     answer, processExpression,convertMixedNumberToFraction
