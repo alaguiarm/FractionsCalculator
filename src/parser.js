@@ -11,7 +11,6 @@ function processExpression(termExpression){
         minusFound = true;
     }
 
-
     if(isNaN(termExpression)){
         if (termExpression.includes("_") && termExpression.includes("/")){
             return validateMixedNumber(termExpression,minusFound);
@@ -26,7 +25,7 @@ function processExpression(termExpression){
 
 function convertMixedNumberToFraction(whole,fraction,minusFound) {
     let [numerator, denominator] = fraction.split("/");
-    return [(+whole * +denominator) + (+numerator),denominator,minusFound];
+    return [(+whole * +denominator) + (+numerator),+denominator,minusFound];
 };
 
 function validateMixedNumber(expression,minusFound) {
@@ -39,7 +38,7 @@ function validateMixedNumber(expression,minusFound) {
 
 function validateFraction(expression,minusFound) {
     if(expression.split("/")[1] > 0){
-        return [expression.split("/")[0],expression.split("/")[1],minusFound];
+        return [Number(expression.split("/")[0]),Number(expression.split("/")[1]),minusFound];
     }else{
         throw new Error ('Invalid expression. Division by Zero. Try again with another one.');
     }
@@ -59,5 +58,5 @@ const answer = (expressionStr) => {
 };
 
 module.exports = {
-    answer
+    answer, processExpression, validateFraction, convertMixedNumberToFraction
 };

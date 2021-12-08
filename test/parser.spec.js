@@ -23,19 +23,25 @@ describe('User Input Parser Test', function () {
 
     describe('Operation Terms Test', function () {
         it('Should deal with mixed numbers', function () {
-            parser.processExpression("3_1/4").should.be.deep.equal([13,"4",false]);
+            parser.processExpression("3_1/4").should.be.deep.equal([13,4,false]);
         });
         it('Should deal with whole numbers', function () {
-            parser.processExpression("7").should.be.deep.equal(["7",1,false]);
+            parser.processExpression("7").should.be.deep.equal([7,1,false]);
         });
         it('Should deal with proper fractions', function () {
-            parser.processExpression("-1/5").should.be.deep.equal(["1","5",true]);
+            parser.processExpression("-1/5").should.be.deep.equal([1,5,true]);
         });
         it('Should deal with zero denominator i.e. Zero division', function () {
             assert.throw(() => {parser.answer("1/2 + 3/0")});
         });
         it('Should deal with zero division', function () {
             assert.throw(() => {parser.answer("1/0 + 0")});
+        });
+        it('Should deal with fractions', function () {
+            parser.validateFraction("1/5",true).should.be.deep.equal([1,5,true]);
+        });
+        it('Should deal with mixed numbers', function () {
+            parser.convertMixedNumberToFraction("3","1/5",true).should.be.deep.equal([16,5,true]);
         });
     });
 });
