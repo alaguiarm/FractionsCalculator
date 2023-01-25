@@ -1,5 +1,5 @@
 # FractionsCalculator
-OneLogin Coding Challenge
+Coding Challenge
 
 ## Table of contents
 * [Description](#description)
